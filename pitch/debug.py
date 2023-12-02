@@ -15,7 +15,8 @@ def save_csv_pitch(pitch, path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--pit", help="pit", dest="pit", required=True)  # pit for train
+    parser.description = 'please enter embed parameter ...'
+    parser.add_argument("-p", "--pit", help="pit", dest="pit")  # pit for train
     args = parser.parse_args()
     print(args.pit)
 
