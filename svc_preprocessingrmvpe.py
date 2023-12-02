@@ -9,7 +9,7 @@ args = parser.parse_args()
 commands = [
    "python prepare/preprocess_a.py -w ./dataset_raw -o ./data_svc/waves-16k -s 16000 -t 0",
    "python prepare/preprocess_a.py -w ./dataset_raw -o ./data_svc/waves-32k -s 32000 -t 0",
-   "python prepare/preprocess_crepe.py -w data_svc/waves-16k/ -p data_svc/pitch -t " + str(args.t),
+   "python prepare/preprocess_rmvpe.py -w data_svc/waves-16k/ -p data_svc/pitch -t " + str(args.t),
    "python prepare/preprocess_ppg.py -w data_svc/waves-16k/ -p data_svc/whisper",
    "python prepare/preprocess_hubert.py -w data_svc/waves-16k/ -v data_svc/hubert -t 1",
    "python prepare/preprocess_speaker.py data_svc/waves-16k/ data_svc/speaker -t 0",
