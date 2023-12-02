@@ -125,9 +125,19 @@ dataset_raw
 ```
 
 ## Data preprocessing
+If you need to do that with crepe
+
 ```shell
 python svc_preprocessing.py -t 2
 ```
+If you need to do that with rmvpe
+
+```shell
+python svc_preprocessingrmvpe.py -t 2
+```
+
+WARNING:Rmvpe might not work, but you can try
+
 `-t`: threading, max number should not exceed CPU core count, usually 2 is enough.
 After preprocessing you will get an output with following structure.
 ```
@@ -189,9 +199,13 @@ data_svc/
     ```
     python prepare/preprocess_a.py -w ./dataset_raw -o ./data_svc/waves-32k -s 32000
     ```
-2. Use 16K audio to extract pitch
+2. Use 16K audio to extract pitch（crepe）
     ```
     python prepare/preprocess_crepe.py -w data_svc/waves-16k/ -p data_svc/pitch
+    ```
+2. Use 16K audio to extract pitch（Rmvpe）
+    ```
+    python prepare/preprocess_rmvpe.py -w data_svc/waves-16k/ -p data_svc/pitch
     ```
 3. Use 16K audio to extract ppg
     ```
