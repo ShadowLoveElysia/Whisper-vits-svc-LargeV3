@@ -237,7 +237,7 @@ data_svc/
     ```
 
 ## Train
-1. If fine-tuning is based on the pre-trained model, you need to download the pre-trained model: [sovits5.0.pretrain.pth](https://github.com/PlayVoice/so-vits-svc-5.0/releases/tag/5.0). Put pretrained model under project root, change this line
+1. If fine-tuning is based on the pre-trained model, you need to download the pre-trained model: [sovits5.0.pretrain.pth](https://github.com/ShadowLoveElysia/so-vits-svc-5.0-LargeV3/releases/tag/1). Put pretrained model under project root, change this line
     ```
     pretrain: "./vits_pretrain/sovits5.0.pretrain.pth"
     ```
