@@ -99,12 +99,22 @@ due to the use of data perturbation, it takes longer to train than other project
 
    **Note: crepe full.pth is 84.9 MB, not 6kb**
    
-7. Download pretrain model(LargeV3) [sovits5.0.pretrain.pth](https://github.com/ShadowLoveElysia/so-vits-svc-5.0-LargeV3/releases/tag/1), and put it into `vits_pretrain/`.
-7. Download pretrain model(LargeV2) [sovits5.0.pretrain.pth](https://github.com/PlayVoice/so-vits-svc-5.0/releases/tag/5.0), and put it into `vits_pretrain/`.
+7. （choose one at your option）Download pretrain model(LargeV3) [sovits5.0.pretrain.pth](https://github.com/ShadowLoveElysia/so-vits-svc-5.0-LargeV3/releases/tag/1), and put it into `vits_pretrain/`.
 
-    ```shell
+   ```shell
     python svc_inference.py --config configs/base.yaml --model ./vits_pretrain/sovits5.0.pretrain.pth --spk ./configs/singers/singer0001.npy --wave test.wav
     ```
+
+7. （choose one at your option）Download pretrain model(LargeV2) [sovits5.0.pretrain.pth](https://github.com/PlayVoice/so-vits-svc-5.0/releases/tag/5.0), and put it into `vits_pretrain/`.
+   
+   ```shell
+    python svc_inference.py --config configs/base.yaml --model ./vits_pretrain/sovits5.0.pretrain.pth --spk ./configs/singers/singer0001.npy --wave test.wav
+    ```
+    
+If you chose LargeV2, use svc_inferencermvpev2 or svc_inferencevcrepev2
+
+If you chose LargeV3, use svc_inferencermvpev3 or svc_inferencevcrepev3
+
 
 ## Dataset preparation
 
