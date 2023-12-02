@@ -99,7 +99,9 @@ due to the use of data perturbation, it takes longer to train than other project
 
    **Note: crepe full.pth is 84.9 MB, not 6kb**
    
-7. Download pretrain model [sovits5.0.pretrain.pth](https://github.com/ShadowLoveElysia/so-vits-svc-5.0-LargeV3/releases/tag/1), and put it into `vits_pretrain/`.
+7. Download pretrain model(LargeV3) [sovits5.0.pretrain.pth](https://github.com/ShadowLoveElysia/so-vits-svc-5.0-LargeV3/releases/tag/1), and put it into `vits_pretrain/`.
+7. Download pretrain model(LargeV2) [sovits5.0.pretrain.pth](https://github.com/PlayVoice/so-vits-svc-5.0/releases/tag/5.0), and put it into `vits_pretrain/`.
+
     ```shell
     python svc_inference.py --config configs/base.yaml --model ./vits_pretrain/sovits5.0.pretrain.pth --spk ./configs/singers/singer0001.npy --wave test.wav
     ```
@@ -237,7 +239,8 @@ data_svc/
     ```
 
 ## Train
-1. If fine-tuning is based on the pre-trained model, you need to download the pre-trained model: [sovits5.0.pretrain.pth](https://github.com/ShadowLoveElysia/so-vits-svc-5.0-LargeV3/releases/tag/1). Put pretrained model under project root, change this line
+1. If fine-tuning is based on the pre-trained model, you need to download the pre-trained model: （LargeV3）[sovits5.0.pretrain.pth](https://github.com/ShadowLoveElysia/so-vits-svc-5.0-LargeV3/releases/tag/1). 
+（LargeV2）[sovits5.0.pretrain.pth](https://github.com/PlayVoice/so-vits-svc-5.0/releases/tag/5.0).Put pretrained model under project root, change this line
     ```
     pretrain: "./vits_pretrain/sovits5.0.pretrain.pth"
     ```
