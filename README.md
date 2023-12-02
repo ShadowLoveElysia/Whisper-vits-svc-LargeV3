@@ -95,7 +95,7 @@ due to the use of data perturbation, it takes longer to train than other project
 
 6. Download pitch extractor [crepe full](https://github.com/maxrmorrison/torchcrepe/tree/master/torchcrepe/assets)，put `full.pth` into `crepe/assets`.
 
-6. （optional） Download [rmvpe](https://github.com/thestmitsuki/so-vits-svc-rmvpe)pretrain
+6. （optional） Download [rmvpe](https://github.com/thestmitsuki/so-vits-svc-rmvpe)pretrain,put `rmvpe.pt` into `prepare`.
 
    **Note: crepe full.pth is 84.9 MB, not 6kb**
    
@@ -110,7 +110,7 @@ due to the use of data perturbation, it takes longer to train than other project
    ```shell
     python svc_inference.py --config configs/base.yaml --model ./vits_pretrain/sovits5.0.pretrain.pth --spk ./configs/singers/singer0001.npy --wave test.wav
     ```
-    
+
 If you chose LargeV2, use svc_inferencermvpev2 or svc_inferencevcrepev2
 
 If you chose LargeV3, use svc_inferencermvpev3 or svc_inferencevcrepev3
