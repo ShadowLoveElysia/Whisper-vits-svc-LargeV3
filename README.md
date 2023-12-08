@@ -322,14 +322,6 @@ data_svc/
 ```
 python svc_inference_post.py --ref test.wav --svc svc_out.wav --out svc_out_post.wav
 ```
-
-## Creat singer
-named by pure coincidence：average -> ave -> eva，eve(eva) represents conception and reproduction
-
-```
-python svc_eva.py
-```
-
 ## Train Feature Retrieval Index (Optional)
 
 To increase the stability of the generated timbre, you can use the method described in the 
@@ -390,6 +382,15 @@ repository. This method consists of 2 steps:
  
     You can explicitly specify the paths to the hubert and whisper indexes using the parameters: `--hubert-index-path` and `--whisper-index-path`
     
+
+## Creat singer
+named by pure coincidence：average -> ave -> eva，eve(eva) represents conception and reproduction
+
+```
+python svc_eva.py
+```
+
+
 
 ```python
 eva_conf = {
