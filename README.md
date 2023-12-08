@@ -437,4 +437,4 @@ https://github.com/svc-develop-team/so-vits-svc
 - [LoRA-SVC](https://github.com/PlayVoice/lora-svc): decoder only svc
 - [Grad-SVC](https://github.com/PlayVoice/Grad-SVC): diffusion based svc
 
-This project does not participate in any disputes of the original project, only for learning use, thank you for using
+This project does not participate in any disputes of the original project, just for learning to use, thank you for using, the effect may not be as good as 4.1, but you can definitely try this project
