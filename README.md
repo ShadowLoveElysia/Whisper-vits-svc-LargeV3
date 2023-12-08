@@ -99,7 +99,7 @@ due to the use of data perturbation, it takes longer to train than other project
 
    **Note: crepe full.pth is 84.9 MB, not 6kb**
    
-7. （choose one at your option）Download pretrain model(LargeV3) [sovits5.0.pretrain.pth](https://github.com/ShadowLoveElysia/so-vits-svc-5.0-LargeV3/releases/tag/1), and put it into `vits_pretrain/`.
+7. （choose one at your option）Download pretrain model，this model Optimized for female voices(LargeV3) [sovits5.0.pretrain.pth](https://github.com/ShadowLoveElysia/so-vits-svc-5.0-LargeV3/releases/tag/2), and put it into `vits_pretrain/`.
 
    ```shell
     python svc_inference.py --config configs/base.yaml --model ./vits_pretrain/sovits5.0.pretrain.pth --spk ./configs/singers/singer0001.npy --wave test.wav
