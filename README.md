@@ -95,7 +95,7 @@ due to the use of data perturbation, it takes longer to train than other project
 
 6. Download pitch extractor [crepe full](https://github.com/maxrmorrison/torchcrepe/tree/master/torchcrepe/assets)，put `full.pth` into `crepe/assets`.
 
-6. （optional） Download [rmvpe](https://github.com/thestmitsuki/so-vits-svc-rmvpe)pretrain,put `rmvpe.pt` into `prepare`.
+6. （optional） Download [rmvpe](https://github.com/thestmitsuki/so-vits-svc-rmvpe)pretrain,put `rmvpe.pt` into `pretrain`.
 
    **Note: crepe full.pth is 84.9 MB, not 6kb**
    
@@ -431,20 +431,10 @@ https://github.com/OlaWod/FreeVC/blob/main/preprocess_sr.py
 
 ## Thanks to
 
-https://github.com/Francis-Komizu/Sovits
+https://github.com/svc-develop-team/so-vits-svc
 
 ## Relevant Projects
 - [LoRA-SVC](https://github.com/PlayVoice/lora-svc): decoder only svc
 - [Grad-SVC](https://github.com/PlayVoice/Grad-SVC): diffusion based svc
 
-## Original evidence
-2022.04.12 https://mp.weixin.qq.com/s/autNBYCsG4_SvWt2-Ll_zA
-
-2022.04.22 https://github.com/PlayVoice/VI-SVS
-
-2022.07.26 https://mp.weixin.qq.com/s/qC4TJy-4EVdbpvK2cQb1TA
-
-2022.09.08 https://github.com/PlayVoice/VI-SVC
-
-## Be copied by svc-develop-team/so-vits-svc
-![coarse_f0_1](https://github.com/PlayVoice/so-vits-svc-5.0/assets/16432329/e2f5e5d3-d169-42c1-953f-4e1648b6da37)
+This project does not participate in any disputes of the original project, only for learning use, thank you for using
