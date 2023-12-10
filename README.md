@@ -300,10 +300,23 @@ data_svc/
    python svc_export.py --config configs/base.yaml --checkpoint_path chkpt/sovits5.0/***.pt
    ```
 2. Inference
-   - if there is no need to adjust `f0`, just run the following command.
+   - if there is no need to adjust `f0`, just run the following command.（Crepe V2）
    ```
-   python svc_inference.py --config configs/base.yaml --model sovits5.0.pth --spk ./data_svc/singer/your_singer.spk.npy --wave test.wav --shift 0
+   python svc_inferencevcrepev2.py --config configs/base.yaml --model sovits5.0.pth --spk ./data_svc/singer/your_singer.spk.npy --wave test.wav --shift 0
    ```
+   - if there is no need to adjust `f0`, just run the following command.（Crepe V3）
+   ```
+   python svc_inferencevcrepev3.py --config configs/base.yaml --model sovits5.0.pth --spk ./data_svc/singer/your_singer.spk.npy --wave test.wav --shift 0
+   ```
+    - if there is no need to adjust `f0`, just run the following command.（RMVPE V2）
+   ```
+   python svc_inferencermvpev2.py --config configs/base.yaml --model sovits5.0.pth --spk ./data_svc/singer/your_singer.spk.npy --wave test.wav --shift 0
+   ```
+   - if there is no need to adjust `f0`, just run the following command.（RMVPE V3）
+   ```
+   python svc_inferencermvpev3.py --config configs/base.yaml --model sovits5.0.pth --spk ./data_svc/singer/your_singer.spk.npy --wave test.wav --shift 0
+   ```
+   
    - if `f0` will be adjusted manually, follow the steps:
      1. use whisper to extract content encoding, generate `test.vec.npy`.
        ```
