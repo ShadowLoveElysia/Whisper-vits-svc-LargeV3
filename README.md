@@ -137,15 +137,28 @@ dataset_raw
 ```
 
 ## Data preprocessing
-If you need to do that with crepe
+
+By default, largeV2 is used for PPG analysis
+
+If you need to do that with crepe（v2）
 
 ```shell
-python svc_preprocessing.py -t 2
+python svc_preprocessingv2.py -t 2
 ```
-If you need to do that with rmvpe
+If you need to do that with crepe（v3）
+```shell
+python svc_preprocessingv3.py -t 2
+```
+
+If you need to do that with rmvpe（v2）
 
 ```shell
-python svc_preprocessingrmvpe.py -t 2
+python svc_preprocessingrmvpev2.py -t 2
+```
+If you need to do that with rmvpe（v3）
+
+```shell
+python svc_preprocessingrmvpev2.py -t 2
 ```
 
 WARNING:Rmvpe might not work, but you can try
