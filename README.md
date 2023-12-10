@@ -500,3 +500,10 @@ https://github.com/svc-develop-team/so-vits-svc
 - [Grad-SVC](https://github.com/PlayVoice/Grad-SVC): diffusion based svc
 
 This project does not participate in any disputes in the original project, just for learning and use, thank you for using, the effect may not be as good as 4.1, but you can definitely try this project, I believe you will not regret
+
+If you encounter a processing error from Intel, add it to the first line of the Python file (.py) where the problem occurred
+
+```
+import sys,os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+```
