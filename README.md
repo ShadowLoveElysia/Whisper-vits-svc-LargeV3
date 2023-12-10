@@ -234,9 +234,13 @@ data_svc/
     ```
     python prepare/preprocess_rmvpe.py -w data_svc/waves-16k/ -p data_svc/pitch
     ```
-3. Use 16K audio to extract ppg
+3. Use 16K audio to extract ppg（v2）
     ```
-    python prepare/preprocess_ppg.py -w data_svc/waves-16k/ -p data_svc/whisper
+    python prepare/preprocess_ppgv2.py -w data_svc/waves-16k/ -p data_svc/whisper
+    ```
+3. Use 16K audio to extract ppg（v3）
+    ```
+    python prepare/preprocess_ppgv3.py -w data_svc/waves-16k/ -p data_svc/whisper
     ```
 4. Use 16K audio to extract hubert
     ```
