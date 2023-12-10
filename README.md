@@ -140,25 +140,27 @@ dataset_raw
 
 By default, largeV2 is used for PPG analysis
 
+However, you can also select "V2" or "V3" in "()" to determine whether to use LargeV2 for PPG processing or LarheV3 for PPG processing
+
 If you need to do that with crepe（v2）
 
 ```shell
-python svc_preprocessingv2.py -t 2
+python svc_preprocessingV2.py -t 2
 ```
 If you need to do that with crepe（v3）
 ```shell
-python svc_preprocessingv3.py -t 2
+python svc_preprocessingV3.py -t 2
 ```
 
 If you need to do that with rmvpe（v2）
 
 ```shell
-python svc_preprocessingrmvpev2.py -t 2
+python svc_preprocessingrmvpeV2.py -t 2
 ```
 If you need to do that with rmvpe（v3）
 
 ```shell
-python svc_preprocessingrmvpev2.py -t 2
+python svc_preprocessingrmvpeV3.py -t 2
 ```
 
 WARNING:Rmvpe might not work, but you can try
