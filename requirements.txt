@@ -12,4 +12,3 @@ omegaconf
 gradio==3.36.1
 ruamel.yaml
 resampy
-dtype
