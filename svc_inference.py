@@ -1,4 +1,7 @@
+import logging
 import sys,os
+from pathlib import Path
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import torch
 import argparse
@@ -8,6 +11,51 @@ from omegaconf import OmegaConf
 from scipy.io.wavfile import write
 from vits.models import SynthesizerInfer
 from pitch import load_csv_pitch
+from feature_retrieval import IRetrieval, DummyRetrieval, FaissIndexRetrieval, load_retrieve_index
+
+logger = logging.getLogger(__name__)
+
+
+def get_speaker_name_from_path(speaker_path: Path) -> str:
+    suffixes = "".join(speaker_path.suffixes)
+    filename = speaker_path.name
+    return filename.rstrip(suffixes)
+
+
+def create_retrival(cli_args) -> IRetrieval:
+    if not cli_args.enable_retrieval:
+        logger.info("infer without retrival")
+        return DummyRetrieval()
+    else:
+        logger.info("load index retrival model")
+
+    speaker_name = get_speaker_name_from_path(Path(args.spk))
+    base_path = Path(".").absolute() / "data_svc" / "indexes" / speaker_name
+
+    if cli_args.hubert_index_path:
+        hubert_index_filepath = cli_args.hubert_index_path
+    else:
+        index_name = f"{cli_args.retrieval_index_prefix}hubert.index"
+        hubert_index_filepath = base_path / index_name
+
+    if cli_args.whisper_index_path:
+        whisper_index_filepath = cli_args.whisper_index_path
+    else:
+        index_name = f"{cli_args.retrieval_index_prefix}whisper.index"
+        whisper_index_filepath = base_path / index_name
+
+    return FaissIndexRetrieval(
+        hubert_index=load_retrieve_index(
+            filepath=hubert_index_filepath,
+            ratio=cli_args.retrieval_ratio,
+            n_nearest_vectors=cli_args.n_retrieval_vectors
+        ),
+        whisper_index=load_retrieve_index(
+            filepath=whisper_index_filepath,
+            ratio=cli_args.retrieval_ratio,
+            n_nearest_vectors=cli_args.n_retrieval_vectors
+        ),
+    )
 
 
 def load_svc_model(checkpoint_path, model):
@@ -24,6 +72,66 @@ def load_svc_model(checkpoint_path, model):
             new_state_dict[k] = v
     model.load_state_dict(new_state_dict)
     return model
+
+
+def svc_infer(model, retrieval: IRetrieval, spk, pit, ppg, vec, hp, device):
+    len_pit = pit.size()[0]
+    len_vec = vec.size()[0]
+    len_ppg = ppg.size()[0]
+    len_min = min(len_pit, len_vec)
+    len_min = min(len_min, len_ppg)
+    pit = pit[:len_min]
+    vec = vec[:len_min, :]
+    ppg = ppg[:len_min, :]
+
+    with torch.no_grad():
+        spk = spk.unsqueeze(0).to(device)
+        source = pit.unsqueeze(0).to(device)
+        source = model.pitch2source(source)
+        pitwav = model.source2wav(source)
+        write("svc_out_pit.wav", hp.data.sampling_rate, pitwav)
+
+        hop_size = hp.data.hop_length
+        all_frame = len_min
+        hop_frame = 10
+        out_chunk = 2500  # 25 S
+        out_index = 0
+        out_audio = []
+
+        while (out_index < all_frame):
+
+            if (out_index == 0):  # start frame
+                cut_s = 0
+                cut_s_out = 0
+            else:
+                cut_s = out_index - hop_frame
+                cut_s_out = hop_frame * hop_size
+
+            if (out_index + out_chunk + hop_frame > all_frame):  # end frame
+                cut_e = all_frame
+                cut_e_out = -1
+            else:
+                cut_e = out_index + out_chunk + hop_frame
+                cut_e_out = -1 * hop_frame * hop_size
+
+            sub_ppg = retrieval.retriv_whisper(ppg[cut_s:cut_e, :])
+            sub_vec = retrieval.retriv_hubert(vec[cut_s:cut_e, :])
+            sub_ppg = sub_ppg.unsqueeze(0).to(device)
+            sub_vec = sub_vec.unsqueeze(0).to(device)
+            sub_pit = pit[cut_s:cut_e].unsqueeze(0).to(device)
+            sub_len = torch.LongTensor([cut_e - cut_s]).to(device)
+            sub_har = source[:, :, cut_s *
+                             hop_size:cut_e * hop_size].to(device)
+            sub_out = model.inference(
+                sub_ppg, sub_vec, sub_pit, spk, sub_len, sub_har)
+            sub_out = sub_out[0, 0].data.cpu().detach().numpy()
+
+            sub_out = sub_out[cut_s_out:cut_e_out]
+            out_audio.extend(sub_out)
+            out_index = out_index + out_chunk
+
+        out_audio = np.asarray(out_audio)
+    return out_audio
 
 
 def main(args):
@@ -45,6 +153,11 @@ def main(args):
             f"Auto run : python pitch/inference.py -w {args.wave} -p {args.pit}")
         os.system(f"python pitch/inference.py -w {args.wave} -p {args.pit}")
 
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     hp = OmegaConf.load(args.config)
     model = SynthesizerInfer(
@@ -52,6 +165,7 @@ def main(args):
         hp.data.segment_size // hp.data.hop_length,
         hp)
     load_svc_model(args.model, model)
+    retrieval = create_retrival(args)
     model.eval()
     model.to(device)
 
@@ -83,82 +197,9 @@ def main(args):
         shift = args.shift
         shift = 2 ** (shift / 12)
         pit = pit * shift
-
     pit = torch.FloatTensor(pit)
 
-    len_pit = pit.size()[0]
-    len_vec = vec.size()[0]
-    len_ppg = ppg.size()[0]
-    len_min = min(len_pit, len_vec)
-    len_min = min(len_min, len_ppg)
-    pit = pit[:len_min]
-    vec = vec[:len_min, :]
-    ppg = ppg[:len_min, :]
-
-    with torch.no_grad():
-
-        spk = spk.unsqueeze(0).to(device)
-        source = pit.unsqueeze(0).to(device)
-        source = model.pitch2source(source)
-        pitwav = model.source2wav(source)
-        write("svc_out_pit.wav", hp.data.sampling_rate, pitwav)
-
-        hop_size = hp.data.hop_length
-        all_frame = len_min
-        hop_frame = 10
-        out_chunk = 2500  # 25 S
-        out_index = 0
-        out_audio = []
-        has_audio = False
-
-        while (out_index + out_chunk < all_frame):
-            has_audio = True
-            if (out_index == 0):  # start frame
-                cut_s = 0
-                cut_s_out = 0
-            else:
-                cut_s = out_index - hop_frame
-                cut_s_out = hop_frame * hop_size
-
-            if (out_index + out_chunk + hop_frame > all_frame):  # end frame
-                cut_e = out_index + out_chunk
-                cut_e_out = 0
-            else:
-                cut_e = out_index + out_chunk + hop_frame
-                cut_e_out = -1 * hop_frame * hop_size
-
-            sub_ppg = ppg[cut_s:cut_e, :].unsqueeze(0).to(device)
-            sub_vec = vec[cut_s:cut_e, :].unsqueeze(0).to(device)
-            sub_pit = pit[cut_s:cut_e].unsqueeze(0).to(device)
-            sub_len = torch.LongTensor([cut_e - cut_s]).to(device)
-            sub_har = source[:, :, cut_s *
-                             hop_size:cut_e * hop_size].to(device)
-            sub_out = model.inference(sub_ppg, sub_vec, sub_pit, spk, sub_len, sub_har)
-            sub_out = sub_out[0, 0].data.cpu().detach().numpy()
-
-            sub_out = sub_out[cut_s_out:cut_e_out]
-            out_audio.extend(sub_out)
-            out_index = out_index + out_chunk
-
-        if (out_index < all_frame):
-            if (has_audio):
-                cut_s = out_index - hop_frame
-                cut_s_out = hop_frame * hop_size
-            else:
-                cut_s = 0
-                cut_s_out = 0
-            sub_ppg = ppg[cut_s:, :].unsqueeze(0).to(device)
-            sub_vec = vec[cut_s:, :].unsqueeze(0).to(device)
-            sub_pit = pit[cut_s:].unsqueeze(0).to(device)
-            sub_len = torch.LongTensor([all_frame - cut_s]).to(device)
-            sub_har = source[:, :, cut_s * hop_size:].to(device)
-            sub_out = model.inference(sub_ppg, sub_vec, sub_pit, spk, sub_len, sub_har)
-            sub_out = sub_out[0, 0].data.cpu().detach().numpy()
-
-            sub_out = sub_out[cut_s_out:]
-            out_audio.extend(sub_out)
-        out_audio = np.asarray(out_audio)
-
+    out_audio = svc_infer(model, retrieval, spk, pit, ppg, vec, hp, device)
     write("svc_out.wav", hp.data.sampling_rate, out_audio)
 
 
@@ -180,6 +221,21 @@ if __name__ == '__main__':
                         help="Path of pitch csv file.")
     parser.add_argument('--shift', type=int, default=0,
                         help="Pitch shift key.")
+
+    parser.add_argument('--enable-retrieval', action="store_true",
+                        help="Enable index feature retrieval")
+    parser.add_argument('--retrieval-index-prefix', default='',
+                        help='retrieval index file prefix. Will load file %prefix%hubert.index/%prefix%whisper.index')
+    parser.add_argument('--retrieval-ratio', type=float, default=.5,
+                        help="ratio of feature retrieval effect. Must be in range 0..1")
+    parser.add_argument('--n-retrieval-vectors', type=int, default=3,
+                        help="get n nearest vectors from retrieval index. Works stably in range 1..3")
+    parser.add_argument('--hubert-index-path', required=False,
+                        help='path to hubert index file. Default data_svc/indexes/speaker.../%prefix%hubert.index')
+    parser.add_argument('--whisper-index-path', required=False,
+                        help='path to whisper index file. Default data_svc/indexes/speaker.../%prefix%whisper.index')
+
+    parser.add_argument('--debug', action="store_true")
     args = parser.parse_args()
 
     main(args)
